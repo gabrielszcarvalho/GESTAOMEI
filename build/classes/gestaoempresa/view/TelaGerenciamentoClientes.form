@@ -28,7 +28,9 @@
               <Group type="103" groupAlignment="1" attributes="0">
                   <Group type="102" attributes="0">
                       <Component id="btnVoltar" min="-2" pref="51" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="847" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="728" max="-2" attributes="0"/>
+                      <Component id="btnEditarTabela" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="btnAdicionarCliente" min="-2" pref="169" max="-2" attributes="0"/>
                   </Group>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -36,7 +38,7 @@
                       <Component id="jScrollPane1" min="-2" pref="1052" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace pref="16" max="32767" attributes="0"/>
+              <EmptySpace pref="31" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -47,12 +49,13 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="btnVoltar" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnAdicionarCliente" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnEditarTabela" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace max="-2" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jScrollPane1" min="-2" pref="507" max="-2" attributes="0"/>
-              <EmptySpace pref="14" max="32767" attributes="0"/>
+              <Component id="jScrollPane1" min="-2" pref="532" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -81,7 +84,8 @@
               </Border>
             </Property>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="5" rowCount="4">
+              <Table columnCount="6" rowCount="4">
+                <Column editable="true" title="ID" type="java.lang.Object"/>
                 <Column editable="true" title="Nome" type="java.lang.Object"/>
                 <Column editable="true" title="Telefone" type="java.lang.Object"/>
                 <Column editable="true" title="Email" type="java.lang.Object"/>
@@ -91,6 +95,11 @@
             </Property>
             <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">
               <TableColumnModel selectionModel="0">
+                <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
+                  <Title/>
+                  <Editor/>
+                  <Renderer/>
+                </Column>
                 <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
                   <Title/>
                   <Editor/>
@@ -145,6 +154,16 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnVoltarActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnEditarTabela">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Editar"/>
+        <Property name="toolTipText" type="java.lang.String" value=""/>
+        <Property name="name" type="java.lang.String" value="btnAdicionarCliente" noResource="true"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnEditarTabelaActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
