@@ -1,60 +1,67 @@
 package gestaoempresa.dao;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class RelatorioDAO {
 
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306/gestao_empresa", "root", "");
+    
+    private static final String URL = "jdbc:mysql://localhost:3306/gestao_empresa?useSSL=false&serverTimezone=UTC";
+    private static final String USER = "root";
+    private static final String PASSWORD = "";
+
+    public Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
-
-    public RelatorioDAO() {
-        criarTabela();
-    }
-
-    private void criarTabela() {
-        try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("""
-                CREATE TABLE IF NOT EXISTS receita_despesa (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    tipo VARCHAR(20) NOT NULL,
-                    descricao VARCHAR(255) NOT NULL,
-                    valor DOUBLE NOT NULL,
-                    data DATE NOT NULL
-                )
-            """);
-            System.out.println("Tabela verificada/criada com sucesso.");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Map<String, Double> obterTotaisPorTipo(String data, String filtro) {
-        Map<String, Double> totais = new HashMap<>();
-        String sql;
-
-        if ("Ambos".equals(filtro))
-            sql = "SELECT tipo, SUM(valor) as total FROM receita_despesa WHERE data = ? GROUP BY tipo";
-        else
-            sql = "SELECT tipo, SUM(valor) as total FROM receita_despesa WHERE data = ? AND tipo = ? GROUP BY tipo";
+    
+    public Map<String, Double> obterTotaisPorTipo(String data, String tipo) throws SQLException {
+        Map<String, Double> resultado = new LinkedHashMap<>();
+        String sql = "SELECT descricao, SUM(valor) AS total " +
+                     "FROM receita_despesa " +
+                     "WHERE (? = 'Ambos' OR tipo = ?) AND DATE(data) = ? " +
+                     "GROUP BY descricao";
 
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, tipo);
+            ps.setString(2, tipo);
+            ps.setString(3, data);
 
-            stmt.setString(1, data);
-            if (!"Ambos".equals(filtro)) stmt.setString(2, filtro);
-
-            ResultSet rs = stmt.executeQuery();
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                totais.put(rs.getString("tipo"), rs.getDouble("total"));
+                resultado.put(rs.getString("descricao"), rs.getDouble("total"));
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return totais;
+
+        return resultado;
+    }
+
+    // NOVO MÉTODO
+    public List<Map<String, Object>> obterRegistrosPorTipo(String data, String tipo) throws SQLException {
+        List<Map<String, Object>> registros = new ArrayList<>();
+        String sql = "SELECT tipo, descricao, valor, data " +
+                     "FROM receita_despesa " +
+                     "WHERE (? = 'Ambos' OR tipo = ?) AND DATE(data) = ? " +
+                     "ORDER BY data";
+
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, tipo);
+            ps.setString(2, tipo);
+            ps.setString(3, data);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> linha = new HashMap<>();
+                linha.put("tipo", rs.getString("tipo"));
+                linha.put("descricao", rs.getString("descricao"));
+                linha.put("valor", rs.getDouble("valor"));
+                linha.put("data", rs.getDate("data"));
+                registros.add(linha);
+            }
+        }
+
+        return registros;
     }
 }

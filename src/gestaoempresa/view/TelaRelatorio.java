@@ -2,7 +2,11 @@ package gestaoempresa.view;
 
 import gestaoempresa.dao.RelatorioDAO;
 import gestaoempresa.util.JanelaUtils;
-
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import java.io.FileOutputStream;
+import java.util.List;
+import java.util.Map;
 import javax.swing.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;
@@ -12,6 +16,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
+
 
 public class TelaRelatorio extends javax.swing.JFrame {
 
@@ -63,6 +68,53 @@ public class TelaRelatorio extends javax.swing.JFrame {
         painelGrafico.add(new ChartPanel(grafico), BorderLayout.CENTER);
         painelGrafico.validate();
     }
+    
+    public void gerarExcelRelatorio(List<Map<String, Object>> registros, String caminhoArquivo) {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Relatório");
+
+            // Cabeçalho
+            Row header = sheet.createRow(0);
+            header.createCell(0).setCellValue("Tipo");
+            header.createCell(1).setCellValue("Descrição");
+            header.createCell(2).setCellValue("Valor");
+            header.createCell(3).setCellValue("Data");
+
+            // Conteúdo
+            int linha = 1;
+            for (Map<String, Object> registro : registros) {
+                Row row = sheet.createRow(linha++);
+                row.createCell(0).setCellValue((String) registro.get("tipo"));
+                row.createCell(1).setCellValue((String) registro.get("descricao"));
+                row.createCell(2).setCellValue((Double) registro.get("valor"));
+                Object dataObj = registro.get("data");
+                String dataStr = "";
+
+                if (dataObj instanceof java.sql.Date) {
+                    java.sql.Date sqlDate = (java.sql.Date) dataObj;
+                    dataStr = new SimpleDateFormat("dd/MM/yyyy").format(sqlDate);
+                } else if (dataObj != null) {
+                    dataStr = dataObj.toString();
+                }
+
+                row.createCell(3).setCellValue(dataStr);
+            }
+
+            // Auto-ajustar colunas
+            for (int i = 0; i < 4; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            FileOutputStream fileOut = new FileOutputStream(caminhoArquivo);
+            workbook.write(fileOut);
+            fileOut.close();
+
+            JOptionPane.showMessageDialog(this, "Excel gerado com sucesso!");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao gerar Excel: " + e.getMessage());
+            e.printStackTrace();
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -178,7 +230,9 @@ public class TelaRelatorio extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGerarRelatorioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGerarRelatorioActionPerformed
+    
         try {
+            // Define o tipo baseado nos radio buttons
             String tipo = null;
             if (rdbtnDespesas.isSelected()) tipo = "Despesa";
             else if (rdbtnReceitas.isSelected()) tipo = "Receita";
@@ -188,19 +242,24 @@ public class TelaRelatorio extends javax.swing.JFrame {
                 return;
             }
 
+            //  Pega a data do spinner
             Date dataSelecionada = (Date) spinnerData.getValue();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String data = sdf.format(dataSelecionada);
 
+            // Chama o DAO
             RelatorioDAO dao = new RelatorioDAO();
-            Map<String, Double> dados = dao.obterTotaisPorTipo(data, tipo);
+            List<Map<String, Object>> registros = dao.obterRegistrosPorTipo(data, tipo); 
 
-            gerarGrafico(dados);
+            // Gera o Excel
+            String caminho = "C:\\Users\\carva\\Desktop\\Relatorio.xlsx"; 
+            gerarExcelRelatorio(registros, caminho);
 
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erro ao gerar relatório: " + e.getMessage());
-            e.printStackTrace();
-        }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Erro ao gerar relatório: " + e.getMessage());
+                e.printStackTrace();
+            }
+
     }//GEN-LAST:event_btnGerarRelatorioActionPerformed
 
     private void rdbtnDespesasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbtnDespesasActionPerformed
