@@ -92,6 +92,34 @@ public class ReceitaDespesaDAO {
         }
         return lista;
     }
+    public double obterSaldoAtual() {
+        String sql = "SELECT SUM(CASE WHEN tipo='Receita' THEN valor ELSE -valor END) FROM receita_despesa";
+        try (Connection con = Conexao.getConnection();
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    public double obterUltimoSaldo() {
+    String sql = "SELECT saldoNoMomento FROM receita_despesa ORDER BY id DESC LIMIT 1";
+    try (Connection con = Conexao.getConnection();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        if (rs.next()) {
+            return rs.getDouble("saldoNoMomento");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return 0; // se não tiver registros, o saldo inicial é 0
+}
+
+
 
     // Atualizar
     public void atualizar(ReceitaDespesa rd) {

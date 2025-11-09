@@ -7,12 +7,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileOutputStream;
 import java.util.List;
 import javax.swing.*;
-import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
 import org.apache.poi.ss.usermodel.Font;
@@ -39,9 +37,9 @@ public class TelaRelatorio extends javax.swing.JFrame {
 
     private void configurarSpinner() {
         SpinnerDateModel modeloData = new SpinnerDateModel();
-        spinnerData.setModel(modeloData);
-        JSpinner.DateEditor editor = new JSpinner.DateEditor(spinnerData, "dd/MM/yyyy");
-        spinnerData.setEditor(editor);
+        spinnerDataInicio.setModel(modeloData);
+        JSpinner.DateEditor editor = new JSpinner.DateEditor(spinnerDataInicio, "dd/MM/yyyy");
+        spinnerDataInicio.setEditor(editor);
     }
 
     private void agruparRadios() {
@@ -65,9 +63,7 @@ public class TelaRelatorio extends javax.swing.JFrame {
                 false
         );
 
-        painelGrafico.removeAll();
-        painelGrafico.add(new ChartPanel(grafico), BorderLayout.CENTER);
-        painelGrafico.validate();
+       
     }
     
     public void gerarExcelRelatorio(List<Map<String, Object>> registros, String caminhoArquivo) {
@@ -182,21 +178,21 @@ public class TelaRelatorio extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        spinnerData = new javax.swing.JSpinner();
+        spinnerDataInicio = new javax.swing.JSpinner();
         btnGerarRelatorio = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         rdbtnDespesas = new javax.swing.JRadioButton();
         rdbtnReceitas = new javax.swing.JRadioButton();
         rdbtnAmbos = new javax.swing.JRadioButton();
-        painelGrafico = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel1.setText("RELATÓRIOS DE GASTOS");
 
-        spinnerData.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        spinnerDataInicio.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         btnGerarRelatorio.setText("GerarRelatório");
         btnGerarRelatorio.addActionListener(new java.awt.event.ActionListener() {
@@ -225,16 +221,8 @@ public class TelaRelatorio extends javax.swing.JFrame {
         rdbtnAmbos.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         rdbtnAmbos.setText("Ambos");
 
-        javax.swing.GroupLayout painelGraficoLayout = new javax.swing.GroupLayout(painelGrafico);
-        painelGrafico.setLayout(painelGraficoLayout);
-        painelGraficoLayout.setHorizontalGroup(
-            painelGraficoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 198, Short.MAX_VALUE)
-        );
-        painelGraficoLayout.setVerticalGroup(
-            painelGraficoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 278, Short.MAX_VALUE)
-        );
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 13)); // NOI18N
+        jLabel4.setText("De");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -243,41 +231,48 @@ public class TelaRelatorio extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel1)
-                    .addComponent(jLabel3)
-                    .addComponent(spinnerData, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(rdbtnDespesas)
-                    .addComponent(btnGerarRelatorio, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(rdbtnReceitas)
-                    .addComponent(rdbtnAmbos))
-                .addGap(18, 18, 18)
-                .addComponent(painelGrafico, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(23, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel1)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(rdbtnDespesas)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(rdbtnReceitas)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(rdbtnAmbos))
+                            .addComponent(btnGerarRelatorio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap(85, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(spinnerDataInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(18, 18, 18)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(spinnerDataInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(painelGrafico, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(spinnerData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(rdbtnDespesas)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(rdbtnReceitas)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(rdbtnAmbos)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnGerarRelatorio)))
-                .addContainerGap(27, Short.MAX_VALUE))
+                        .addComponent(rdbtnAmbos))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel3)
+                        .addComponent(rdbtnDespesas)))
+                .addGap(18, 18, 18)
+                .addComponent(btnGerarRelatorio)
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         pack();
@@ -297,7 +292,7 @@ public class TelaRelatorio extends javax.swing.JFrame {
             }
 
             //  Pega a data do spinner
-            Date dataSelecionada = (Date) spinnerData.getValue();
+            Date dataSelecionada = (Date) spinnerDataInicio.getValue();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             String data = sdf.format(dataSelecionada);
 
@@ -356,10 +351,10 @@ public class TelaRelatorio extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JPanel painelGrafico;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JRadioButton rdbtnAmbos;
     private javax.swing.JRadioButton rdbtnDespesas;
     private javax.swing.JRadioButton rdbtnReceitas;
-    private javax.swing.JSpinner spinnerData;
+    private javax.swing.JSpinner spinnerDataInicio;
     // End of variables declaration//GEN-END:variables
 }

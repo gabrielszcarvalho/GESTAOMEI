@@ -61,7 +61,7 @@ public class TelaReceitaDespesa extends javax.swing.JFrame {
             gestaoempresa.util.JanelaUtils.voltarParaPrincipal(TelaReceitaDespesa.this);
         }
         });
-        model = new DefaultTableModel(new String[]{"ID", "Tipo", "Descrição", "Valor", "Data","Totalizador","Ações"}, 0);
+        model = new DefaultTableModel(new String[]{"ID", "Tipo", "Descrição", "Valor", "Data","Ações"}, 0);
         tableRegistros.setModel(model);
         tableRegistros.removeColumn(tableRegistros.getColumnModel().getColumn(0)); //oculta a colune id
         
@@ -330,6 +330,7 @@ private void carregarTabela() {
 
 
 
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -430,13 +431,13 @@ private void carregarTabela() {
 
         tableRegistros.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Tipo", "Descrição", "Data", "Valor", "Totalizador", "Ações"
+                "Tipo", "Descrição", "Data", "Valor", "Ações"
             }
         ));
         jScrollPane1.setViewportView(tableRegistros);
