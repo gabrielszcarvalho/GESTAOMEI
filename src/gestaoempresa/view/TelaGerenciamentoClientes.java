@@ -2,6 +2,7 @@ package gestaoempresa.view;
 
 import gestaoempresa.dao.ClienteDAO;
 import gestaoempresa.model.Cliente;
+import gestaoempresa.util.JanelaUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -12,14 +13,24 @@ import java.util.List;
 
 public class TelaGerenciamentoClientes extends javax.swing.JFrame {
     private boolean modoEdicaoAtivo = false;
-
+    
     public TelaGerenciamentoClientes() {
         initComponents();
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+         addWindowListener(new java.awt.event.WindowAdapter() {
+        @Override
+        public void windowClosing(java.awt.event.WindowEvent evt) {
+            // Aqui chamamos a classe utilitária que abre a TelaPrincipal
+            gestaoempresa.util.JanelaUtils.voltarParaPrincipal(TelaGerenciamentoClientes.this);
+        }
+        });
         configurarTabelaAcoes();
         carregarClientes();
         setLocationRelativeTo(null);
         setTitle("Gerenciamento de Clientes");
         tableClientes.removeColumn(tableClientes.getColumnModel().getColumn(0)); // esconde ID
+        pack(); // garante que todos os componentes estão dimensionados
+        setLocationRelativeTo(null); // centraliza a tela
     }
 
     private void configurarTabelaAcoes() {
@@ -197,7 +208,6 @@ public class TelaGerenciamentoClientes extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         tableClientes = new javax.swing.JTable();
         btnAdicionarCliente = new javax.swing.JButton();
-        btnVoltar = new javax.swing.JButton();
         btnEditarTabela = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -229,14 +239,6 @@ public class TelaGerenciamentoClientes extends javax.swing.JFrame {
             }
         });
 
-        btnVoltar.setText("<");
-        btnVoltar.setName("btnAdicionarCliente"); // NOI18N
-        btnVoltar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnVoltarActionPerformed(evt);
-            }
-        });
-
         btnEditarTabela.setText("Editar");
         btnEditarTabela.setToolTipText("");
         btnEditarTabela.setName("btnAdicionarCliente"); // NOI18N
@@ -251,32 +253,32 @@ public class TelaGerenciamentoClientes extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(12, 12, 12)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(728, 728, 728)
+                        .addComponent(jLabel1)
+                        .addGap(550, 550, 550)
                         .addComponent(btnEditarTabela)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnAdicionarCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel1)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1052, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(31, Short.MAX_VALUE))
+                        .addComponent(btnAdicionarCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(8, 8, 8)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnVoltar)
-                    .addComponent(btnAdicionarCliente)
-                    .addComponent(btnEditarTabela))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(8, 8, 8)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnAdicionarCliente)
+                            .addComponent(btnEditarTabela)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 532, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(43, Short.MAX_VALUE))
         );
 
         pack();
@@ -287,20 +289,11 @@ public class TelaGerenciamentoClientes extends javax.swing.JFrame {
         new TelaCadastroCliente(this).setVisible(true);
     }//GEN-LAST:event_btnAdicionarClienteActionPerformed
 
-    private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
-// Fecha a tela atual
-    this.dispose();
-    
-    // Abre a tela principal
-    TelaPrincipal telaPrincipal = new TelaPrincipal();
-    telaPrincipal.setVisible(true);
-    }//GEN-LAST:event_btnVoltarActionPerformed
-
     private void btnEditarTabelaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarTabelaActionPerformed
         
         if (!modoEdicaoAtivo) {
         modoEdicaoAtivo = true;
-        btnEditarTabela.setText("Salvar Alterações");
+        btnEditarTabela.setText("Salvar");
 
         // Ativa edição apenas nas colunas certas (não edita ID nem Ações)
         tableClientes.setDefaultEditor(Object.class, new DefaultCellEditor(new JTextField()) {
@@ -354,7 +347,6 @@ public class TelaGerenciamentoClientes extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdicionarCliente;
     private javax.swing.JButton btnEditarTabela;
-    private javax.swing.JButton btnVoltar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tableClientes;

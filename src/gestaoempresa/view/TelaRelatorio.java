@@ -1,22 +1,67 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package gestaoempresa.view;
 
-/**
- *
- * @author carva
- */
-public class TelaRelatorio extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaRelatorio.class.getName());
+import gestaoempresa.dao.RelatorioDAO;
+import gestaoempresa.util.JanelaUtils;
 
-    /**
-     * Creates new form TelaRelatorio
-     */
+import javax.swing.*;
+import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.general.DefaultPieDataset;
+
+public class TelaRelatorio extends javax.swing.JFrame {
+
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaReceitaDespesa.class.getName());
     public TelaRelatorio() {
         initComponents();
+        JanelaUtils.centralizarJanela(this);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+         addWindowListener(new java.awt.event.WindowAdapter() {
+        @Override
+        public void windowClosing(java.awt.event.WindowEvent evt) {
+            // Aqui chamamos a classe utilitária que abre a TelaPrincipal
+            gestaoempresa.util.JanelaUtils.voltarParaPrincipal(TelaRelatorio.this);
+        }
+        });
+        configurarSpinner();
+        agruparRadios();
+    }
+
+    private void configurarSpinner() {
+        SpinnerDateModel modeloData = new SpinnerDateModel();
+        spinnerData.setModel(modeloData);
+        JSpinner.DateEditor editor = new JSpinner.DateEditor(spinnerData, "dd/MM/yyyy");
+        spinnerData.setEditor(editor);
+    }
+
+    private void agruparRadios() {
+        ButtonGroup grupo = new ButtonGroup();
+        grupo.add(rdbtnDespesas);
+        grupo.add(rdbtnReceitas);
+        grupo.add(rdbtnAmbos);
+    }
+    private void gerarGrafico(Map<String, Double> dados) {
+        DefaultPieDataset dataset = new DefaultPieDataset();
+
+        for (Map.Entry<String, Double> entrada : dados.entrySet()) {
+            dataset.setValue(entrada.getKey(), entrada.getValue());
+        }
+
+        JFreeChart grafico = ChartFactory.createPieChart(
+                "Distribuição de Gastos",
+                dataset,
+                true,
+                true,
+                false
+        );
+
+        painelGrafico.removeAll();
+        painelGrafico.add(new ChartPanel(grafico), BorderLayout.CENTER);
+        painelGrafico.validate();
     }
 
     /**
@@ -28,21 +73,139 @@ public class TelaRelatorio extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        spinnerData = new javax.swing.JSpinner();
+        btnGerarRelatorio = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        rdbtnDespesas = new javax.swing.JRadioButton();
+        rdbtnReceitas = new javax.swing.JRadioButton();
+        rdbtnAmbos = new javax.swing.JRadioButton();
+        painelGrafico = new javax.swing.JPanel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jLabel1.setText("RELATÓRIOS DE GASTOS");
+
+        spinnerData.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        btnGerarRelatorio.setText("GerarRelatório");
+        btnGerarRelatorio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGerarRelatorioActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel2.setText("DATA:");
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel3.setText("TIPO:");
+
+        rdbtnDespesas.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        rdbtnDespesas.setText("Despesas");
+        rdbtnDespesas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rdbtnDespesasActionPerformed(evt);
+            }
+        });
+
+        rdbtnReceitas.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        rdbtnReceitas.setText("Receitas");
+
+        rdbtnAmbos.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        rdbtnAmbos.setText("Ambos");
+
+        javax.swing.GroupLayout painelGraficoLayout = new javax.swing.GroupLayout(painelGrafico);
+        painelGrafico.setLayout(painelGraficoLayout);
+        painelGraficoLayout.setHorizontalGroup(
+            painelGraficoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 597, Short.MAX_VALUE)
+        );
+        painelGraficoLayout.setVerticalGroup(
+            painelGraficoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 278, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel3)
+                    .addComponent(spinnerData, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(rdbtnDespesas)
+                    .addComponent(btnGerarRelatorio, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(rdbtnReceitas)
+                    .addComponent(rdbtnAmbos))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 148, Short.MAX_VALUE)
+                .addComponent(painelGrafico, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(41, 41, 41))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(spinnerData, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(rdbtnDespesas)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(rdbtnReceitas)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(rdbtnAmbos)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnGerarRelatorio))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(painelGrafico, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnGerarRelatorioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGerarRelatorioActionPerformed
+        try {
+            String tipo = null;
+            if (rdbtnDespesas.isSelected()) tipo = "Despesa";
+            else if (rdbtnReceitas.isSelected()) tipo = "Receita";
+            else if (rdbtnAmbos.isSelected()) tipo = "Ambos";
+            else {
+                JOptionPane.showMessageDialog(this, "Selecione um tipo de relatório (Despesas, Receitas ou Ambos).");
+                return;
+            }
+
+            Date dataSelecionada = (Date) spinnerData.getValue();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String data = sdf.format(dataSelecionada);
+
+            RelatorioDAO dao = new RelatorioDAO();
+            Map<String, Double> dados = dao.obterTotaisPorTipo(data, tipo);
+
+            gerarGrafico(dados);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao gerar relatório: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_btnGerarRelatorioActionPerformed
+
+    private void rdbtnDespesasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbtnDespesasActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_rdbtnDespesasActionPerformed
 
     /**
      * @param args the command line arguments
@@ -70,5 +233,14 @@ public class TelaRelatorio extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnGerarRelatorio;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel painelGrafico;
+    private javax.swing.JRadioButton rdbtnAmbos;
+    private javax.swing.JRadioButton rdbtnDespesas;
+    private javax.swing.JRadioButton rdbtnReceitas;
+    private javax.swing.JSpinner spinnerData;
     // End of variables declaration//GEN-END:variables
 }

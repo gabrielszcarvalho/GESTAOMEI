@@ -17,6 +17,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
      */
     public TelaPrincipal() {
         initComponents();
+         pack(); // garante que todos os componentes estão dimensionados
+        setLocationRelativeTo(null); // centraliza a tela
     }
 
     /**
