@@ -6,7 +6,6 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileOutputStream;
 import java.util.List;
-import java.util.Map;
 import javax.swing.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;
@@ -16,6 +15,8 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
+import org.apache.poi.ss.usermodel.Font;
+
 
 
 public class TelaRelatorio extends javax.swing.JFrame {
@@ -70,49 +71,104 @@ public class TelaRelatorio extends javax.swing.JFrame {
     }
     
     public void gerarExcelRelatorio(List<Map<String, Object>> registros, String caminhoArquivo) {
-        try (Workbook workbook = new XSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet("Relatório");
+    try (Workbook workbook = new XSSFWorkbook()) {
+        Sheet sheet = workbook.createSheet("Relatório");
 
-            // Cabeçalho
-            Row header = sheet.createRow(0);
-            header.createCell(0).setCellValue("Tipo");
-            header.createCell(1).setCellValue("Descrição");
-            header.createCell(2).setCellValue("Valor");
-            header.createCell(3).setCellValue("Data");
+        // --- Criando estilos ---
+        // Estilo do cabeçalho
+        CellStyle headerStyle = workbook.createCellStyle();
+        headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+        headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        headerStyle.setAlignment(HorizontalAlignment.CENTER);
+        headerStyle.setBorderBottom(BorderStyle.THIN);
+        headerStyle.setBorderTop(BorderStyle.THIN);
+        headerStyle.setBorderLeft(BorderStyle.THIN);
+        headerStyle.setBorderRight(BorderStyle.THIN);
+        
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setColor(IndexedColors.WHITE.getIndex());
+        headerStyle.setFont(headerFont);
 
-            // Conteúdo
-            int linha = 1;
-            for (Map<String, Object> registro : registros) {
-                Row row = sheet.createRow(linha++);
-                row.createCell(0).setCellValue((String) registro.get("tipo"));
-                row.createCell(1).setCellValue((String) registro.get("descricao"));
-                row.createCell(2).setCellValue((Double) registro.get("valor"));
-                Object dataObj = registro.get("data");
-                String dataStr = "";
+        // Estilo para valores numéricos
+        CellStyle valorStyle = workbook.createCellStyle();
+        valorStyle.setDataFormat(workbook.createDataFormat().getFormat("R$ #,##0.00"));
+        valorStyle.setBorderBottom(BorderStyle.THIN);
+        valorStyle.setBorderTop(BorderStyle.THIN);
+        valorStyle.setBorderLeft(BorderStyle.THIN);
+        valorStyle.setBorderRight(BorderStyle.THIN);
 
-                if (dataObj instanceof java.sql.Date) {
-                    java.sql.Date sqlDate = (java.sql.Date) dataObj;
-                    dataStr = new SimpleDateFormat("dd/MM/yyyy").format(sqlDate);
-                } else if (dataObj != null) {
-                    dataStr = dataObj.toString();
-                }
+        // Estilo para datas
+        CellStyle dataStyle = workbook.createCellStyle();
+        dataStyle.setDataFormat(workbook.createDataFormat().getFormat("dd/MM/yyyy"));
+        dataStyle.setBorderBottom(BorderStyle.THIN);
+        dataStyle.setBorderTop(BorderStyle.THIN);
+        dataStyle.setBorderLeft(BorderStyle.THIN);
+        dataStyle.setBorderRight(BorderStyle.THIN);
 
-                row.createCell(3).setCellValue(dataStr);
+        // Estilo padrão de células
+        CellStyle defaultStyle = workbook.createCellStyle();
+        defaultStyle.setBorderBottom(BorderStyle.THIN);
+        defaultStyle.setBorderTop(BorderStyle.THIN);
+        defaultStyle.setBorderLeft(BorderStyle.THIN);
+        defaultStyle.setBorderRight(BorderStyle.THIN);
+
+        // --- Cabeçalho ---
+        Row header = sheet.createRow(0);
+        String[] colunas = {"Tipo", "Descrição", "Valor", "Data"};
+        for (int i = 0; i < colunas.length; i++) {
+            Cell cell = header.createCell(i);
+            cell.setCellValue(colunas[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+        // --- Conteúdo ---
+        int linha = 1;
+        for (Map<String, Object> registro : registros) {
+            Row row = sheet.createRow(linha++);
+            
+            // Tipo
+            Cell tipoCell = row.createCell(0);
+            tipoCell.setCellValue((String) registro.get("tipo"));
+            tipoCell.setCellStyle(defaultStyle);
+
+            // Descrição
+            Cell descCell = row.createCell(1);
+            descCell.setCellValue((String) registro.get("descricao"));
+            descCell.setCellStyle(defaultStyle);
+
+            // Valor
+            Cell valorCell = row.createCell(2);
+            valorCell.setCellValue((Double) registro.get("valor"));
+            valorCell.setCellStyle(valorStyle);
+
+            // Data
+            Cell dataCell = row.createCell(3);
+            Object dataObj = registro.get("data");
+            if (dataObj instanceof java.sql.Date sqlDate) {
+                dataCell.setCellValue(sqlDate);
+            } else if (dataObj instanceof java.util.Date utilDate) {
+                dataCell.setCellValue(utilDate);
+            } else {
+                dataCell.setCellValue(String.valueOf(dataObj));
             }
+            dataCell.setCellStyle(dataStyle);
+        }
 
-            // Auto-ajustar colunas
-            for (int i = 0; i < 4; i++) {
-                sheet.autoSizeColumn(i);
-            }
+        // Auto-ajustar colunas
+        for (int i = 0; i < colunas.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
 
-            FileOutputStream fileOut = new FileOutputStream(caminhoArquivo);
-            workbook.write(fileOut);
-            fileOut.close();
+        // --- Salvar arquivo ---
+        FileOutputStream fileOut = new FileOutputStream(caminhoArquivo);
+        workbook.write(fileOut);
+        fileOut.close();
 
-            JOptionPane.showMessageDialog(this, "Excel gerado com sucesso!");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erro ao gerar Excel: " + e.getMessage());
-            e.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Excel gerado com sucesso!");
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Erro ao gerar Excel: " + e.getMessage());
+        e.printStackTrace();
     }
 }
 
@@ -173,7 +229,7 @@ public class TelaRelatorio extends javax.swing.JFrame {
         painelGrafico.setLayout(painelGraficoLayout);
         painelGraficoLayout.setHorizontalGroup(
             painelGraficoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 597, Short.MAX_VALUE)
+            .addGap(0, 198, Short.MAX_VALUE)
         );
         painelGraficoLayout.setVerticalGroup(
             painelGraficoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -195,16 +251,17 @@ public class TelaRelatorio extends javax.swing.JFrame {
                     .addComponent(btnGerarRelatorio, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(rdbtnReceitas)
                     .addComponent(rdbtnAmbos))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 148, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(painelGrafico, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(41, 41, 41))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(painelGrafico, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2)
@@ -219,11 +276,8 @@ public class TelaRelatorio extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(rdbtnAmbos)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnGerarRelatorio))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(painelGrafico, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(30, Short.MAX_VALUE))
+                        .addComponent(btnGerarRelatorio)))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         pack();
@@ -252,14 +306,20 @@ public class TelaRelatorio extends javax.swing.JFrame {
             List<Map<String, Object>> registros = dao.obterRegistrosPorTipo(data, tipo); 
 
             // Gera o Excel
-            String caminho = "C:\\Users\\carva\\Desktop\\Relatorio.xlsx"; 
-            gerarExcelRelatorio(registros, caminho);
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Salvar Relatório");
+            fileChooser.setSelectedFile(new java.io.File("Relatorio.xlsx")); // Nome padrão
 
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Erro ao gerar relatório: " + e.getMessage());
-                e.printStackTrace();
+            int userSelection = fileChooser.showSaveDialog(this);
+
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                java.io.File fileToSave = fileChooser.getSelectedFile();
+                gerarExcelRelatorio(registros, fileToSave.getAbsolutePath());
             }
-
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao gerar relatório: " + e.getMessage());
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_btnGerarRelatorioActionPerformed
 
     private void rdbtnDespesasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rdbtnDespesasActionPerformed
